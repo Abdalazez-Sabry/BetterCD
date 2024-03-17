@@ -1,10 +1,11 @@
-﻿using BetterCd;
+﻿using BetterCD;
 
-class Hello
+class Program
 {
     public static void Main(string[] args)
     {
-        var fileManager = new FileManager(new DirectoryInfo("./"), args);
-        fileManager.Run();
+        var tui = new TUI(args);
+        tui.Run();
+
     }
 }

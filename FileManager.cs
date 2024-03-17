@@ -1,18 +1,16 @@
 using System.Diagnostics;
+using System.Linq.Expressions;
 
-namespace BetterCd
+namespace BetterCD
 {
     public class FileManager 
     {
         public DirectoryInfo CurrentDirectory { get; set; }
-
-        private const string QUIT = "q";
         private string? bcdPath;
-        private bool isRunning = false;
 
-        public FileManager(DirectoryInfo curernt, string[] args) 
+        public FileManager(string[] args) 
         {
-            CurrentDirectory = curernt;
+            CurrentDirectory = new DirectoryInfo("./");
 
             HandleArgs(args);
 
@@ -27,6 +25,14 @@ namespace BetterCd
             {
                 0 => null,
                 1 => args[0],
+                2 => args[0],
+                _ => throw new ArgumentException()
+            };
+
+            CurrentDirectory = args.Length switch {
+                0 => new DirectoryInfo("./"),
+                1 => new DirectoryInfo("./"),
+                2 => new DirectoryInfo(args[1]),
                 _ => throw new ArgumentException()
             };
         }
@@ -58,9 +64,9 @@ namespace BetterCd
             return directoreyEntries;
         }
 
-        private void NavigateOrOpen(string path) 
+        public void NavigateOrOpen(string name) 
         {
-            Console.WriteLine(path);
+            var path = Path.Combine(CurrentDirectory.FullName, name);
             if (Directory.Exists(path)) 
             {
                 CurrentDirectory = new DirectoryInfo(path);
@@ -73,67 +79,32 @@ namespace BetterCd
                 process.Start();
             } else 
             {
+                Console.WriteLine("not file nor directorey");
                 throw new FieldAccessException(path);
             }
 
         }
 
-        private void PrintFileNamesInDirectory(IList<string> directoreyEntries) 
+        public List<string> GetDerictoriesName() 
         {
-            var currentOption = 0 ; 
-            Console.WriteLine($"{CurrentDirectory.FullName}");
+            var directoreyEntries = GetDirectoreyEntries();
+
+            List<string> result = [];
 
             foreach (var entryPath in directoreyEntries)
             {
                 // string entryName = entryPath == BACK ? BACK : Path.GetFileName(entryPath);
                 string entryName = Path.GetRelativePath(CurrentDirectory.FullName, entryPath);
-                Console.WriteLine($"{currentOption} -> {entryName}");
-                currentOption++;
+                result.Add(entryName);
             }
-
-            Console.WriteLine();
+            return result;
         }
 
-        private void QuitAndSave() {
-            if (bcdPath is not null) {
+        public void QuitAndSave()
+        {
+            if (bcdPath is not null)
+            {
                 File.WriteAllText(bcdPath, CurrentDirectory.FullName);
-                isRunning = false;
-            }
-        }
-
-        private void ReadOption(List<string> directoreyEntries) 
-        {
-            var optionStr = Console.ReadLine() ?? throw new KeyNotFoundException();
-
-            if (optionStr == QUIT) 
-            {
-                QuitAndSave();
-                return;
-            }
-
-            if (!int.TryParse(optionStr, out int option)) 
-            {
-                throw new NotFiniteNumberException(optionStr);
-            }
-
-            if (option < 0 || option >= directoreyEntries.Count) 
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            NavigateOrOpen(directoreyEntries[option]);
-
-        }
-
-        public void Run() 
-        {
-            isRunning = true;
-
-            while (isRunning)
-            {
-                List<string> naviationPaths = GetDirectoreyEntries();
-                PrintFileNamesInDirectory(naviationPaths);
-                ReadOption(naviationPaths);
             }
         }
     }
