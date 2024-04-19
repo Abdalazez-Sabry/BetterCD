@@ -13,7 +13,7 @@ namespace BetterCD.Commands
                 { Key.j, new DownCommand(listView, Key.j) },
                 { Key.l, new OpenCommand(fileManager, listView, title) },
                 { Key.h, new BackCommand(fileManager, listView, title) },
-                { Key.q, new QuitCommand() },
+                { Key.Esc, new QuitCommand(fileManager) },
                 { Key.s, new SaveQuitCommand(fileManager) },
             };
         }

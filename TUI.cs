@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Reflection;
 using BetterCD.Commands;
 using Terminal.Gui;
 

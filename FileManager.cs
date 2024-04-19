@@ -6,37 +6,41 @@ namespace BetterCD
     public class FileManager
     {
         public DirectoryInfo CurrentDirectory { get; set; }
-        private string? bcdPath;
+        private readonly string? bcdPath;
+        private readonly string _runDirectory;
 
         public FileManager(string[] args)
         {
             CurrentDirectory = new DirectoryInfo("./");
+            _runDirectory = Path.GetFullPath("./");
 
-            HandleArgs(args);
+            switch (args.Length)
+            {
+                case 0:
+                    bcdPath = null;
+                    CurrentDirectory = new DirectoryInfo("./");
+                    break;
+                case 1:
+                    bcdPath = args[0];
+                    CurrentDirectory = new DirectoryInfo("./");
+                    break;
+                case 2:
+                    bcdPath = args[0];
+                    CurrentDirectory = new DirectoryInfo(args[1]);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
 
             if (!CurrentDirectory.Exists)
             {
                 throw new DirectoryNotFoundException(CurrentDirectory.FullName);
             }
-        }
 
-        private void HandleArgs(string[] args)
-        {
-            bcdPath = args.Length switch
+            if (bcdPath is not null && !File.Exists(bcdPath))
             {
-                0 => null,
-                1 => args[0],
-                2 => args[0],
-                _ => throw new ArgumentException()
-            };
-
-            CurrentDirectory = args.Length switch
-            {
-                0 => new DirectoryInfo("./"),
-                1 => new DirectoryInfo("./"),
-                2 => new DirectoryInfo(args[1]),
-                _ => throw new ArgumentException()
-            };
+                File.Create(bcdPath).Close();
+            }
         }
 
         private List<string> GetDirectoreyEntries()
@@ -108,10 +112,23 @@ namespace BetterCD
 
         public void SaveAndQuit()
         {
-            if (bcdPath is not null)
+            if (bcdPath is null)
             {
-                File.WriteAllText(bcdPath, CurrentDirectory.FullName);
+                return;
             }
+
+            File.WriteAllText(bcdPath, CurrentDirectory.FullName);
+        }
+
+        public void Quit()
+        {
+            if (bcdPath is null)
+            {
+                return;
+            }
+
+            File.WriteAllText(bcdPath, _runDirectory);
         }
     }
+
 }
