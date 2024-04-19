@@ -11,7 +11,7 @@ A command line tool I have created to make it easier for me to navigate through 
 
     ```bash
     function bcd {
-       $bcddirectorey = "C:\Dev\BetterCd\.bcddirectorey"
+       $bcddirectorey = "<BetterCD Path>\.bcddirectorey"
        bettercd $bcddirectorey 
        cd (get-content $bcddirectorey)
     }
