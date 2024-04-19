@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "better-cd", "better-cd.csproj", "{70ADB20D-A404-4CCA-B34B-F472F48EDF97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bettercd", "bettercd.csproj", "{70ADB20D-A404-4CCA-B34B-F472F48EDF97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
