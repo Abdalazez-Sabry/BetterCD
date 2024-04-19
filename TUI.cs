@@ -8,7 +8,6 @@ namespace BetterCD
     public class TUI
     {
         private readonly FileManager _fileManager;
-        private CommandManager _commandManager;
 
         public TUI(string[] args)
         {
@@ -34,8 +33,8 @@ namespace BetterCD
                 Y = 2
             };
 
-            _commandManager = new CommandManager(_fileManager, listView, title);
-            HandleInputs(listView);
+            CommandManager commandManager = new(_fileManager, listView, title);
+            HandleInputs(listView, commandManager);
 
             Application.Top.Add(listView);
             Application.Top.Add(title);
@@ -43,11 +42,11 @@ namespace BetterCD
             Application.Shutdown();
         }
 
-        private void HandleInputs(ListView listView)
+        private void HandleInputs(ListView listView, CommandManager commandManager)
         {
             listView.KeyPress += (eventArgs) =>
             {
-                if (_commandManager.Commands.TryGetValue(eventArgs.KeyEvent.Key, out IFileManagerCommand? command))
+                if (commandManager.Commands.TryGetValue(eventArgs.KeyEvent.Key, out IFileManagerCommand? command))
                 {
                     command.Excute();
                 }
