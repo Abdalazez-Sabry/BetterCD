@@ -1,59 +1,55 @@
 using System.Collections;
+using System.Reflection;
+using BetterCD.Commands;
 using Terminal.Gui;
 
-namespace BetterCD 
+namespace BetterCD
 {
     public class TUI
     {
-        private readonly FileManager fileManager;
+        private readonly FileManager _fileManager;
+        private CommandManager _commandManager;
+
         public TUI(string[] args)
         {
-            fileManager = new FileManager(args);
+            _fileManager = new FileManager(args);
         }
 
         public void Run()
         {
             Application.Init();
 
-            var currentDirectories = fileManager.GetDerictoriesName();
+            var currentDirectories = _fileManager.GetDerictoriesName();
 
-            var title = new Label(fileManager.CurrentDirectory.Name) { 
-                Border = new Border(){ BorderStyle = BorderStyle.Rounded} ,
-                Width = Dim.Fill(), 
+            var title = new Label(_fileManager.CurrentDirectory.Name)
+            {
+                Border = new Border() { BorderStyle = BorderStyle.Rounded },
+                Width = Dim.Fill(),
 
             };
-            var lv = new ListView(currentDirectories)
+            var listView = new ListView(currentDirectories)
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
                 Y = 2
             };
 
+            _commandManager = new CommandManager(_fileManager, listView, title);
+            HandleInputs(listView);
 
-            HandleInputs(lv, currentDirectories, title);
-
-            Application.Top.Add(lv);
+            Application.Top.Add(listView);
             Application.Top.Add(title);
             Application.Run();
             Application.Shutdown();
-            fileManager.QuitAndSave();
         }
 
-        private void HandleInputs(ListView lv, List<string> currentDirectories, Label title) {
-            bool isClickingEnter = false;
-            lv.KeyDown += (key) => {
-                if (!isClickingEnter && key.KeyEvent.Key == Key.Enter) {
-                    isClickingEnter = true;
-                    var selected = lv.SelectedItem;
-                    fileManager.NavigateOrOpen(currentDirectories[lv.SelectedItem]);
-                    currentDirectories = fileManager.GetDerictoriesName();
-                    lv.SetSource(currentDirectories);
-                    title.Text = fileManager.CurrentDirectory.Name;
-                }
-            };
-            lv.KeyUp += (key) => {
-                if (isClickingEnter && key.KeyEvent.Key == Key.Enter) {
-                    isClickingEnter = false;
+        private void HandleInputs(ListView listView)
+        {
+            listView.KeyPress += (eventArgs) =>
+            {
+                if (_commandManager.Commands.TryGetValue(eventArgs.KeyEvent.Key, out IFileManagerCommand? command))
+                {
+                    command.Excute();
                 }
             };
         }

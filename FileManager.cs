@@ -3,25 +3,26 @@ using System.Linq.Expressions;
 
 namespace BetterCD
 {
-    public class FileManager 
+    public class FileManager
     {
         public DirectoryInfo CurrentDirectory { get; set; }
         private string? bcdPath;
 
-        public FileManager(string[] args) 
+        public FileManager(string[] args)
         {
             CurrentDirectory = new DirectoryInfo("./");
 
             HandleArgs(args);
 
-            if (!CurrentDirectory.Exists) 
+            if (!CurrentDirectory.Exists)
             {
                 throw new DirectoryNotFoundException(CurrentDirectory.FullName);
             }
         }
 
-        private void HandleArgs(string[] args) {
-            bcdPath = args.Length switch 
+        private void HandleArgs(string[] args)
+        {
+            bcdPath = args.Length switch
             {
                 0 => null,
                 1 => args[0],
@@ -29,7 +30,8 @@ namespace BetterCD
                 _ => throw new ArgumentException()
             };
 
-            CurrentDirectory = args.Length switch {
+            CurrentDirectory = args.Length switch
+            {
                 0 => new DirectoryInfo("./"),
                 1 => new DirectoryInfo("./"),
                 2 => new DirectoryInfo(args[1]),
@@ -37,17 +39,19 @@ namespace BetterCD
             };
         }
 
-        private List<string> GetDirectoreyEntries() 
+        private List<string> GetDirectoreyEntries()
         {
-            // var subDirectories = Directory.GetDirectories(CurrentDirectory.FullName);
             var subDirectories = CurrentDirectory.GetDirectories();
             var subFiles = CurrentDirectory.GetFiles();
 
             var directoreyEntries = new List<string>(subDirectories.Length + subFiles.Length);
-            
-            if (CurrentDirectory.Parent is null) {
+
+            if (CurrentDirectory.Parent is null)
+            {
                 directoreyEntries.AddRange(Directory.GetLogicalDrives());
-            } else {
+            }
+            else
+            {
                 directoreyEntries.Add(CurrentDirectory.Parent.FullName);
             }
 
@@ -64,20 +68,22 @@ namespace BetterCD
             return directoreyEntries;
         }
 
-        public void NavigateOrOpen(string name) 
+        public void NavigateOrOpen(int index)
         {
-            var path = Path.Combine(CurrentDirectory.FullName, name);
-            if (Directory.Exists(path)) 
+            var path = Path.Combine(CurrentDirectory.FullName, GetDerictoriesName()[index]);
+            if (Directory.Exists(path))
             {
                 CurrentDirectory = new DirectoryInfo(path);
 
-            } else if (File.Exists(path)) 
+            }
+            else if (File.Exists(path))
             {
                 Process process = new();
                 process.StartInfo.FileName = path;
                 process.StartInfo.UseShellExecute = true;
                 process.Start();
-            } else 
+            }
+            else
             {
                 Console.WriteLine("not file nor directorey");
                 throw new FieldAccessException(path);
@@ -85,7 +91,7 @@ namespace BetterCD
 
         }
 
-        public List<string> GetDerictoriesName() 
+        public List<string> GetDerictoriesName()
         {
             var directoreyEntries = GetDirectoreyEntries();
 
@@ -100,7 +106,7 @@ namespace BetterCD
             return result;
         }
 
-        public void QuitAndSave()
+        public void SaveAndQuit()
         {
             if (bcdPath is not null)
             {
