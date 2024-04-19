@@ -14,23 +14,12 @@ namespace BetterCD
             CurrentDirectory = new DirectoryInfo("./");
             _runDirectory = Path.GetFullPath("./");
 
-            switch (args.Length)
+            bcdPath = args.Length switch
             {
-                case 0:
-                    bcdPath = null;
-                    CurrentDirectory = new DirectoryInfo("./");
-                    break;
-                case 1:
-                    bcdPath = args[0];
-                    CurrentDirectory = new DirectoryInfo("./");
-                    break;
-                case 2:
-                    bcdPath = args[0];
-                    CurrentDirectory = new DirectoryInfo(args[1]);
-                    break;
-                default:
-                    throw new ArgumentException();
-            }
+                0 => null,
+                1 => args[0],
+                _ => throw new ArgumentException(),
+            };
 
             if (!CurrentDirectory.Exists)
             {
